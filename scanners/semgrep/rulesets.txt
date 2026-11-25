@@ -1,0 +1,8 @@
+# Semgrep registry rulesets used by `harness scan` (one per line)
+p/default
+p/python
+p/typescript
+p/nodejs
+p/jwt
+p/secrets
+p/dockerfile

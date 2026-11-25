@@ -1,0 +1,221 @@
+# SEC545 AI security harness configuration
+# provider: claude_cli  -> headless Claude Code (uses your Claude Code login; no API key)
+#           anthropic_api -> Anthropic Python SDK (needs ANTHROPIC_API_KEY)
+#           databricks    -> Databricks Model Serving / Unity Gateway (profiles may override per profile)
+provider: claude_cli
+
+# Benchmark runs keep going when one model session fails; the failure is recorded in
+# calls.jsonl and the affected items fall back to needs_review / no result (scored as misses).
+tolerate_call_failures: false
+
+_bench: &bench           # identical limits for every benchmark model; only the model varies
+  discovery_passes: 1
+  max_turns: 40
+  max_budget_usd: 8.00      # used by claude_cli/anthropic_api; databricks uses max_session_tokens
+  live_validation: false    # static code-based validation only: no app, no PoC execution
+  tolerate_call_failures: true
+
+profiles:
+  cheap:            # default: as cheap as possible (Haiku/Sonnet only, single discovery pass)
+    triage: haiku
+    discovery: sonnet
+    validation: sonnet
+    attack_path: sonnet
+    discovery_passes: 1
+    max_turns: 40           # per phase session (claude_cli)
+    max_budget_usd: 3.00    # per phase session (claude_cli)
+  showcase:         # for the live class run if you want stronger results
+    triage: sonnet
+    discovery: opus
+    validation: opus
+    attack_path: opus
+    discovery_passes: 2
+    max_turns: 80
+    max_budget_usd: 10.00
+  opus:             # model-comparison run: identical to `cheap` but all-Opus (only the model varies)
+    triage: opus
+    discovery: opus
+    validation: opus
+    attack_path: opus
+    discovery_passes: 1
+    max_turns: 40
+    max_budget_usd: 8.00
+
+  # ---- 15-model Databricks benchmark (same harness, same inputs, static validation) ----
+  db-opus-5-5:
+    provider: databricks
+    triage: db-opus-5-5
+    discovery: db-opus-5-5
+    validation: db-opus-5-5
+    attack_path: db-opus-5-5
+    <<: *bench
+  db-haiku-5-5:
+    provider: databricks
+    triage: db-haiku-5-5
+    discovery: db-haiku-5-5
+    validation: db-haiku-5-5
+    attack_path: db-haiku-5-5
+    <<: *bench
+  db-gpt-6-2-sol:
+    provider: databricks
+    triage: db-gpt-6-2-sol
+    discovery: db-gpt-6-2-sol
+    validation: db-gpt-6-2-sol
+    attack_path: db-gpt-6-2-sol
+    <<: *bench
+  db-gpt-oss-120b:
+    provider: databricks
+    triage: db-gpt-oss-120b
+    discovery: db-gpt-oss-120b
+    validation: db-gpt-oss-120b
+    attack_path: db-gpt-oss-120b
+    <<: *bench
+  db-gemini-4-argon:
+    provider: databricks
+    triage: db-gemini-4-argon
+    discovery: db-gemini-4-argon
+    validation: db-gemini-4-argon
+    attack_path: db-gemini-4-argon
+    <<: *bench
+  db-gemini-3-8-flash:
+    provider: databricks
+    triage: db-gemini-3-8-flash
+    discovery: db-gemini-3-8-flash
+    validation: db-gemini-3-8-flash
+    attack_path: db-gemini-3-8-flash
+    <<: *bench
+  db-gemma-3-12b:
+    provider: databricks
+    triage: db-gemma-3-12b
+    discovery: db-gemma-3-12b
+    validation: db-gemma-3-12b
+    attack_path: db-gemma-3-12b
+    <<: *bench
+  db-grok-4-7:
+    provider: databricks
+    triage: db-grok-4-7
+    discovery: db-grok-4-7
+    validation: db-grok-4-7
+    attack_path: db-grok-4-7
+    <<: *bench
+  db-kimi-k3-1-pro:
+    provider: databricks
+    triage: db-kimi-k3-1-pro
+    discovery: db-kimi-k3-1-pro
+    validation: db-kimi-k3-1-pro
+    attack_path: db-kimi-k3-1-pro
+    <<: *bench
+  db-glm-5-3:
+    provider: databricks
+    triage: db-glm-5-3
+    discovery: db-glm-5-3
+    validation: db-glm-5-3
+    attack_path: db-glm-5-3
+    <<: *bench
+  db-glm-5-3-flash:
+    provider: databricks
+    triage: db-glm-5-3-flash
+    discovery: db-glm-5-3-flash
+    validation: db-glm-5-3-flash
+    attack_path: db-glm-5-3-flash
+    <<: *bench
+  db-qwen35-122b:
+    provider: databricks
+    triage: db-qwen35-122b
+    discovery: db-qwen35-122b
+    validation: db-qwen35-122b
+    attack_path: db-qwen35-122b
+    <<: *bench
+  db-qwen3-next-80b:
+    provider: databricks
+    triage: db-qwen3-next-80b
+    discovery: db-qwen3-next-80b
+    validation: db-qwen3-next-80b
+    attack_path: db-qwen3-next-80b
+    <<: *bench
+  db-llama-4-maverick:
+    provider: databricks
+    triage: db-llama-4-maverick
+    discovery: db-llama-4-maverick
+    validation: db-llama-4-maverick
+    attack_path: db-llama-4-maverick
+    <<: *bench
+  db-deepseek-v4-1-flash:
+    provider: databricks
+    triage: db-deepseek-v4-1-flash
+    discovery: db-deepseek-v4-1-flash
+    validation: db-deepseek-v4-1-flash
+    attack_path: db-deepseek-v4-1-flash
+    <<: *bench
+
+# model aliases -> exact IDs for the API provider (claude_cli accepts the aliases directly)
+models:
+  haiku: claude-haiku-5-5
+  sonnet: claude-sonnet-5-5
+  opus: claude-opus-5-5
+
+# USD per 1M tokens (API provider cost estimate; claude_cli reports its own total_cost_usd)
+pricing:
+  claude-haiku-5-5: { input: 0.10, output: 0.50 }
+  claude-sonnet-5-5: { input: 2.00, output: 10.00 }
+  claude-opus-5-5: { input: 4.00, output: 20.00 }
+
+databricks:
+  max_output_tokens: 16000
+  max_session_tokens: 2000000   # input+output tokens per model session before "return the final JSON now"
+  request_timeout_s: 300
+  max_retries: 5
+
+# alias -> where/how to call it. endpoint = /serving-endpoints/<name>; gateway = Unity Gateway model service.
+# api: chat (default) | responses (needed for GPT-6.x function tools on Databricks)
+databricks_models:
+  db-opus-5-5: { endpoint: databricks-claude-opus-5-5 }
+  db-haiku-5-5: { endpoint: databricks-claude-haiku-5-5 }
+  db-gpt-6-2-sol: { gateway: system.ai.gpt-6-2-sol, api: responses }
+  db-gpt-oss-120b: { endpoint: databricks-gpt-oss-120b }
+  db-gemini-4-argon: { endpoint: databricks-gemini-4-argon }
+  db-gemini-3-8-flash: { endpoint: databricks-gemini-3-8-flash }
+  db-gemma-3-12b: { endpoint: databricks-gemma-3-12b, max_output_tokens: 8192 }
+  db-grok-4-7: { endpoint: databricks-grok-4-7 }
+  db-kimi-k3-1-pro: { gateway: system.ai.kimi-k3-1-pro }
+  db-glm-5-3: { endpoint: databricks-glm-5-3 }
+  db-glm-5-3-flash: { endpoint: databricks-glm-5-3-flash }
+  db-qwen35-122b: { endpoint: databricks-qwen35-122b-a10b }
+  db-qwen3-next-80b: { endpoint: databricks-qwen3-next-80b-a3b-instruct, max_output_tokens: 8192 }
+  db-llama-4-maverick: { endpoint: databricks-llama-4-maverick, max_output_tokens: 8192 }
+  db-deepseek-v4-1-flash: { gateway: system.ai.deepseek-v4-1-flash-1017 }
+
+scanners:
+  trivy: aquasec/trivy:0.56.2
+  semgrep: semgrep/semgrep:1.95.0
+  trufflehog: trufflesecurity/trufflehog:3.88.0
+
+validation:
+  batch_size: 8
+  live: true               # default; a profile can set live_validation: false (static-only)
+  reset_app_before: true
+
+apps:
+  snackoverflow:
+    path: apps/snackoverflow
+    base_url: http://localhost:8001
+    container: snackoverflow-api-1
+    image: sec545/snackoverflow-api:latest
+    description: "Food-delivery marketplace (Python/FastAPI). Roles: customer, restaurant_owner, driver, admin."
+    login: { method: POST, path: /api/auth/login, body: { email: "{email}", password: "{password}" }, token_json_path: token }
+    # pentest-style engagement accounts handed to the AI (low privilege; no admin)
+    accounts:
+      alice: { email: alice@snack.local, password: alice123, role: customer, note: "user id 1" }
+      bob: { email: bob@snack.local, password: bob123, role: customer, note: "user id 2" }
+      chef: { email: chef@nullpointer.pizza, password: chef123, role: restaurant_owner, note: "owns restaurants 1, 3, 4" }
+      rider: { email: rider@snack.local, password: rider123, role: driver }
+  ragnarok:
+    path: apps/ragnarok
+    base_url: http://localhost:8002
+    container: ragnarok-app-1
+    image: sec545/ragnarok:latest
+    description: "GenAI knowledge assistant (Node/TypeScript/Express) with RAG, a simulated LLM and agent tools. Two tenants (workspaces)."
+    login: { method: POST, path: /api/login, body: { email: "{email}", password: "{password}" }, token_json_path: token }
+    accounts:
+      freya: { email: freya@asgard.local, password: freya123, role: user, note: "workspace 1 (Asgard Inc)" }
+      loki: { email: loki@midgard.local, password: loki123, role: user, note: "workspace 2 (Midgard Mutual)" }

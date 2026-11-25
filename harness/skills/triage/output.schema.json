@@ -1,0 +1,24 @@
+{
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "triage_item_id": { "type": "string" },
+          "verdict": { "type": "string", "enum": ["confirmed", "not_actionable", "needs_review"] },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+          "reachable": { "type": ["boolean", "null"] },
+          "rationale": { "type": "string" },
+          "evidence": { "type": "string", "description": "file:line references and what they show" },
+          "counterevidence": { "type": "string" },
+          "flip_fact": { "type": "string" },
+          "cwe": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": ["triage_item_id", "verdict", "confidence", "rationale"]
+      }
+    }
+  },
+  "required": ["items"]
+}

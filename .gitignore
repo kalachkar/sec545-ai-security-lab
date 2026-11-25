@@ -1,0 +1,18 @@
+# harness run output (local only; may contain code from the private range)
+results/*
+!results/.gitkeep
+
+# python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# local secrets / settings
+.env
+*.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db

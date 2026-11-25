@@ -1,0 +1,50 @@
+{
+ "type": "object",
+ "properties": {
+  "results": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "survives": {
+      "type": "string",
+      "enum": [
+       "yes",
+       "no",
+       "uncertain"
+      ]
+     },
+     "confidence": {
+      "type": "string",
+      "enum": [
+       "high",
+       "medium",
+       "low"
+      ]
+     },
+     "static_evidence": {
+      "type": "string"
+     },
+     "proof_gap": {
+      "type": "string"
+     },
+     "human_check": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "id",
+     "survives",
+     "confidence",
+     "static_evidence"
+    ]
+   }
+  }
+ },
+ "required": [
+  "results"
+ ]
+}

@@ -1,0 +1,39 @@
+{
+  "type": "object",
+  "properties": {
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "D-01, D-02, ..." },
+          "title": { "type": "string" },
+          "family": { "type": "string", "enum": ["authz", "logic", "llm", "injection", "deserialization", "ssrf", "path", "crypto", "secret", "xss", "info", "other"] },
+          "cwe": { "type": "array", "items": { "type": "string" } },
+          "locations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file": { "type": "string" },
+                "line": { "type": "integer" },
+                "role": { "type": "string", "enum": ["entrypoint", "root_control", "sink", "concrete_implementation"] }
+              },
+              "required": ["file", "line", "role"]
+            }
+          },
+          "source": { "type": "string" },
+          "control": { "type": "string" },
+          "sink": { "type": "string" },
+          "impact": { "type": "string" },
+          "counterevidence": { "type": "string" },
+          "severity_hypothesis": { "type": "string", "enum": ["critical", "high", "medium", "low"] },
+          "validation_hint": { "type": "string" }
+        },
+        "required": ["id", "title", "family", "cwe", "locations", "source", "sink", "impact", "severity_hypothesis"]
+      }
+    },
+    "coverage_notes": { "type": "string" }
+  },
+  "required": ["candidates"]
+}

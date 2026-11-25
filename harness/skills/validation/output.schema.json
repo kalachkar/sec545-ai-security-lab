@@ -1,0 +1,56 @@
+{
+  "type": "object",
+  "properties": {
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "survives": { "type": "string", "enum": ["yes", "no", "uncertain"] },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+          "static_evidence": { "type": "string" },
+          "proof_gap": { "type": "string" },
+          "poc": {
+            "type": ["object", "null"],
+            "properties": {
+              "description": { "type": "string" },
+              "steps": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "method": { "type": "string" },
+                    "path": { "type": "string" },
+                    "auth": { "type": ["string", "null"] },
+                    "headers": { "type": "object" },
+                    "json": {},
+                    "form": { "type": "object" },
+                    "raw_body": { "type": "string" },
+                    "files": { "type": "object" },
+                    "repeat": { "type": "integer" },
+                    "parallel": { "type": "boolean" },
+                    "extract": { "type": "object" },
+                    "expect": {
+                      "type": "object",
+                      "properties": {
+                        "status": { "type": "array", "items": { "type": "integer" } },
+                        "body_contains": { "type": "array", "items": { "type": "string" } },
+                        "body_regex": { "type": "string" },
+                        "container_file": { "type": "string" }
+                      }
+                    }
+                  },
+                  "required": ["name", "method", "path"]
+                }
+              }
+            }
+          }
+        },
+        "required": ["id", "survives", "confidence", "static_evidence"]
+      }
+    }
+  },
+  "required": ["results"]
+}
